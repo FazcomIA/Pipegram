@@ -35,15 +35,6 @@ A Pipegram permite aos usuários autenticarem e automatizarem ações em suas co
 - `GET /profile/{targetUsername}` — Ver perfil público de outro usuário
 - `POST /profile/update-bio` — Atualiza bio e imagem de perfil
 
-### 📩 Mensagens Diretas (DMs)
-
-- `POST /dm/send` — Enviar mensagem de texto
-- `GET /dm/inbox` — Listar conversas da inbox
-- `GET /dm/thread/{threadId}` — Ver mensagens de uma thread
-- `POST /dm/send-photo` — Enviar imagem via DM
-
----
-
 ## 🔐 Segurança
 
 Todas as rotas são protegidas por um token **admin** definido no `.env.example`:

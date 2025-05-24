@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API Instagram Local",
+    "title": "Pipegram 1.0.1",
     "version": "1.0.1",
     "description": "API local para interagir com Instagram com sessões em JSON",
     "x-logo": {
@@ -21,23 +21,17 @@
     },
     {
       "name": "Post",
-      "description": "Publicações (feed, stories, reels)"
+      "description": "Publicações (feed, stories)"
     },
     {
       "name": "Profile",
       "description": "Perfil do usuário"
-    },
-    {
-      "name": "DM",
-      "description": "Mensagens diretas"
     }
   ],
   "paths": {
     "/auth/login": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Login com Instagram",
         "requestBody": {
           "required": true,
@@ -56,10 +50,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "username",
-                  "password"
-                ],
+                "required": ["username", "password"],
                 "example": {
                   "username": "usuario_ig",
                   "password": "senha_secreta",
@@ -78,9 +69,7 @@
     },
     "/auth/resume": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Retomar sessão existente",
         "requestBody": {
           "required": true,
@@ -93,9 +82,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "username"
-                ],
+                "required": ["username"],
                 "example": {
                   "username": "usuario_ig"
                 }
@@ -112,9 +99,7 @@
     },
     "/auth/status": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Verificar status de sessão",
         "requestBody": {
           "required": true,
@@ -127,9 +112,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "username"
-                ],
+                "required": ["username"],
                 "example": {
                   "username": "usuario_ig"
                 }
@@ -146,9 +129,7 @@
     },
     "/auth/delete": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Excluir sessão salva",
         "requestBody": {
           "required": true,
@@ -161,9 +142,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "username"
-                ],
+                "required": ["username"],
                 "example": {
                   "username": "usuario_ig"
                 }
@@ -225,10 +204,8 @@
     },
     "/post/photo-feed": {
       "post": {
-        "tags": [
-          "Post"
-        ],
-        "summary": "Publicar imagem no feed",
+        "summary": "Publicar foto no feed",
+        "tags": ["Post"],
         "requestBody": {
           "required": true,
           "content": {
@@ -236,44 +213,32 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "caption": {
-                    "type": "string"
-                  },
-                  "base64": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
+                  "username": { "type": "string" },
+                  "caption": { "type": "string" },
+                  "base64": { "type": "string" },
+                  "url": { "type": "string" }
                 },
-                "required": [
-                  "username"
-                ],
-                "example": {
-                  "username": "usuario_ig",
-                  "caption": "Olá mundo!",
-                  "url": "https://exemplo.com/imagem.jpg"
-                }
+                "required": ["username"]
+              },
+              "example": {
+                "username": "i4_machine",
+                "caption": "Minha foto no feed!",
+                "url": "https://meusite.com/foto.jpg"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Foto publicada"
+            "description": "Foto publicada com sucesso"
           }
         }
       }
     },
     "/post/photo-story": {
       "post": {
-        "tags": [
-          "Post"
-        ],
-        "summary": "Publicar imagem nos Stories",
+        "summary": "Publicar foto nos Stories",
+        "tags": ["Post"],
         "requestBody": {
           "required": true,
           "content": {
@@ -281,316 +246,22 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "base64": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
+                  "username": { "type": "string" },
+                  "base64": { "type": "string" },
+                  "url": { "type": "string" }
                 },
-                "required": [
-                  "username"
-                ],
-                "example": {
-                  "username": "usuario_ig",
-                  "url": "https://exemplo.com/story.jpg"
-                }
+                "required": ["username"]
+              },
+              "example": {
+                "username": "i4_machine",
+                "base64": "<sua imagem em base64 aqui>"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Story com imagem publicado"
-          }
-        }
-      }
-    },
-    "/post/video-feed": {
-      "post": {
-        "tags": [
-          "Post"
-        ],
-        "summary": "Publicar vídeo no Feed",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "caption": {
-                    "type": "string"
-                  },
-                  "video": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Arquivo de vídeo para o Feed"
-                  }
-                },
-                "required": [
-                  "username",
-                  "video"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Vídeo publicado"
-          }
-        }
-      }
-    },
-    "/post/video-story": {
-      "post": {
-        "tags": [
-          "Post"
-        ],
-        "summary": "Publicar vídeo nos Stories",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "video": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Arquivo de vídeo para o Story"
-                  }
-                },
-                "required": [
-                  "username",
-                  "video"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Story com vídeo publicado"
-          }
-        }
-      }
-    },
-    "/post/video-reels": {
-      "post": {
-        "tags": [
-          "Post"
-        ],
-        "summary": "Publicar vídeo no Reels",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "caption": {
-                    "type": "string"
-                  },
-                  "video": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Arquivo de vídeo para o Reels"
-                  }
-                },
-                "required": [
-                  "username",
-                  "video"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Reels publicado"
-          }
-        }
-      }
-    },
-    "/dm/send": {
-      "post": {
-        "tags": [
-          "DM"
-        ],
-        "summary": "Enviar DM",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "toUsername": {
-                    "type": "string"
-                  },
-                  "message": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "username",
-                  "toUsername",
-                  "message"
-                ],
-                "example": {
-                  "username": "minha_conta",
-                  "toUsername": "destinatario",
-                  "message": "Olá! Tudo bem?"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "DM enviada"
-          }
-        }
-      }
-    },
-    "/dm/inbox": {
-      "post": {
-        "tags": [
-          "DM"
-        ],
-        "summary": "Obter inbox de mensagens",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "username"
-                ],
-                "example": {
-                  "username": "minha_conta"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Inbox retornada"
-          }
-        }
-      }
-    },
-    "/dm/thread/{threadId}": {
-      "post": {
-        "tags": [
-          "DM"
-        ],
-        "summary": "Obter mensagens da conversa",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "threadId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "12345678901234567"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "username"
-                ],
-                "example": {
-                  "username": "minha_conta"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Mensagens retornadas"
-          }
-        }
-      }
-    },
-    "/dm/send-photo": {
-      "post": {
-        "tags": [
-          "DM"
-        ],
-        "summary": "Enviar imagem na DM",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "toUsername": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string"
-                  },
-                  "base64": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "username",
-                  "toUsername"
-                ],
-                "example": {
-                  "username": "minha_conta",
-                  "toUsername": "destinatario",
-                  "url": "https://exemplo.com/imagem.jpg"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Imagem enviada na DM"
+            "description": "Story com foto publicado"
           }
         }
       }
