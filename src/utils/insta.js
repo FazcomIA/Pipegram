@@ -27,7 +27,22 @@ async function getUserIdByUsername(username, targetUsername) {
   return user.pk;
 }
 
+function extractShortCodeFromUrl(url) {
+  const match = url.match(/\/(p|reel|tv)\/([^/?]+)/);
+  if (!match || !match[2]) {
+    throw new Error("Não foi possível extrair o shortCode da URL");
+  }
+  return match[2];
+}
+
+async function extractMediaIdFromUrl(ig, url) {
+  const shortCode = extractShortCodeFromUrl(url);
+  return await getMediaIdFromShortCode(ig, shortCode);
+}
+
 module.exports = {
   getMediaIdFromUrl,
   getUserIdByUsername,
+  extractMediaIdFromUrl,
+  extractShortCodeFromUrl,
 };

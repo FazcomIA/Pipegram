@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Pipegram 1.0.1",
+    "title": "API Instagram Local",
     "version": "1.0.1",
     "description": "API local para interagir com Instagram com sessões em JSON",
     "x-logo": {
@@ -26,6 +26,14 @@
     {
       "name": "Profile",
       "description": "Perfil do usuário"
+    },
+    {
+      "name": "DM",
+      "description": "Mensagens diretas"
+    },
+    {
+      "name": "Stories",
+      "description": "Gerenciamento de stories"
     }
   ],
   "paths": {
@@ -221,7 +229,7 @@
                 "required": ["username"]
               },
               "example": {
-                "username": "i4_machine",
+                "username": "minha_conta",
                 "caption": "Minha foto no feed!",
                 "url": "https://meusite.com/foto.jpg"
               }
@@ -253,7 +261,7 @@
                 "required": ["username"]
               },
               "example": {
-                "username": "i4_machine",
+                "username": "minha_conta",
                 "base64": "<sua imagem em base64 aqui>"
               }
             }
@@ -262,6 +270,183 @@
         "responses": {
           "200": {
             "description": "Story com foto publicado"
+          }
+        }
+      }
+    },
+    "/dm/send": {
+      "post": {
+        "tags": ["DM"],
+        "summary": "Enviar DM",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "toUsername": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username", "toUsername", "message"],
+                "example": {
+                  "username": "minha_conta",
+                  "toUsername": "destinatario",
+                  "message": "Olá! Tudo bem?"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DM enviada"
+          }
+        }
+      }
+    },
+    "/dm/inbox": {
+      "post": {
+        "tags": ["DM"],
+        "summary": "Obter inbox de mensagens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username"],
+                "example": {
+                  "username": "minha_conta"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inbox retornada"
+          }
+        }
+      }
+    },
+    "/dm/thread/{threadId}": {
+      "post": {
+        "tags": ["DM"],
+        "summary": "Obter mensagens da conversa",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "threadId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "12345678901234567"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username"],
+                "example": {
+                  "username": "minha_conta"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mensagens retornadas"
+          }
+        }
+      }
+    },
+    "/stories": {
+      "post": {
+        "tags": ["Stories"],
+        "summary": "Listar stories de um usuário",
+        "description": "Retorna os stories públicos recentes de um usuário a partir do username da sessão logada e do username alvo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "minha_sessao"
+                  },
+                  "targetUsername": {
+                    "type": "string",
+                    "example": "neymarjr"
+                  }
+                },
+                "required": ["username", "targetUsername"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stories obtidos com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string",
+                        "example": "omateusgomes7"
+                      },
+                      "media_type": {
+                        "type": "string",
+                        "example": "photo"
+                      },
+                      "taken_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-06-01T12:34:56.000Z"
+                      },
+                      "media_url": {
+                        "type": "string",
+                        "example": "https://scontent.cdninstagram.com/story123.jpg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição mal formatada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }
@@ -312,6 +497,83 @@
             "description": "Erro interno ao buscar perfil"
           }
         }
+      }
+    },
+    "/profile/stories/{targetUsername}": {
+      "get": {
+        "tags": ["Profile"],
+        "summary": "Buscar stories de um usuário",
+        "description": "Retorna os stories públicos do usuário informado. É necessário que a conta logada (username) tenha permissão para visualizar os stories.",
+        "parameters": [
+          {
+            "name": "targetUsername",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Username do perfil que você quer buscar os stories"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "minha_conta_ativa"
+                  }
+                },
+                "required": ["username"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista de stories retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "3132895121894228375_12345678"
+                      },
+                      "type": { "type": "string", "example": "image" },
+                      "url": {
+                        "type": "string",
+                        "example": "https://instagram.com/story.jpg"
+                      },
+                      "taken_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-05-23T16:47:32.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parâmetros ausentes"
+          },
+          "500": {
+            "description": "Erro ao buscar stories"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/profile/update-bio": {

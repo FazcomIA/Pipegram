@@ -1,14 +1,12 @@
 version: "3.8"
-
 services:
   api-instagram:
     build: .
-    container_name: pipegram_v1
+    image: mateusgomes1/pipegram:latest
     ports:
       - "3000:3000"
     volumes:
       - ./sessions:/app/sessions
-      - ./src:/app/src
     env_file:
       - .env
     restart: unless-stopped

@@ -16,6 +16,9 @@ app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 app.use("/auth", adminAuthMiddleware, require("./src/routes/authRoutes"));
 app.use("/post", adminAuthMiddleware, require("./src/routes/postRoutes"));
 app.use("/profile", adminAuthMiddleware, require("./src/routes/profileRoutes"));
+app.use("/dm", adminAuthMiddleware, require("./src/routes/dmRoutes"));
+
+app.use("/stories", adminAuthMiddleware, require("./src/routes/storiesRoutes"));
 
 // Swagger docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
