@@ -13,7 +13,7 @@ app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 // Rotas protegidas com token admin
-app.use("/auth", adminAuthMiddleware, require("./src/routes/authRoutes"));
+app.use("/auth", require("./src/routes/authRoutes"));
 app.use("/post", adminAuthMiddleware, require("./src/routes/postRoutes"));
 app.use("/profile", adminAuthMiddleware, require("./src/routes/profileRoutes"));
 app.use("/dm", adminAuthMiddleware, require("./src/routes/dmRoutes"));

@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API Instagram Local",
+    "title": "Pipegram v1.0.2",
     "version": "1.0.1",
     "description": "API local para interagir com Instagram com sessões em JSON",
     "x-logo": {

@@ -1,7 +1,10 @@
 version: "3.8"
 services:
   api-instagram:
-    build: .
+    build:
+      context: .
+      platform: linux/amd64 # Especifica a arquitetura desejada
+
     image: mateusgomes1/pipegram:latest
     ports:
       - "3000:3000"
