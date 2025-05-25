@@ -61,6 +61,25 @@
   }
   ```
 
+### ✉️ Direct Messages
+
+- `POST /dm/send`  
+  Envia uma mensagem de texto.
+
+  ```json
+  {
+    "username": "conta_insta",
+    "toUsername": "destino",
+    "message": "Olá!"
+  }
+  ```
+
+- `GET /dm/inbox`  
+  Lista as conversas da conta.
+
+- `GET /dm/thread/{threadId}`  
+  Lista as mensagens da conversa.
+
 ---
 
 ### 👤 Perfil
