@@ -30,6 +30,25 @@ A Pipegram permite aos usuários autenticarem e automatizarem ações em suas co
 - `POST /post/video-story` — Publicar vídeo nos stories
 - `POST /post/video-reels` — Publicar vídeo no Reels
 
+### ✉️ Direct Messages
+
+- `POST /dm/send`  
+  Envia uma mensagem de texto.
+
+  ```json
+  {
+    "username": "conta_insta",
+    "toUsername": "destino",
+    "message": "Olá!"
+  }
+  ```
+
+- `GET /dm/inbox`  
+  Lista as conversas da conta.
+
+- `GET /dm/thread/{threadId}`  
+  Lista as mensagens da conversa.
+
 ### 👤 Perfil
 
 - `GET /profile/{targetUsername}` — Ver perfil público de outro usuário
