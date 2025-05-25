@@ -2,7 +2,7 @@
   <img src="https://i.imgur.com/zbmYf2q.png" width="200" alt="Pipegram Logo" />
 </p>
 
-# Pipegram - API Não Oficial do Instagram 🚀
+# Pipegram 🚀
 
 **Pipegram** é uma API REST **não oficial** do Instagram, desenvolvida com Node.js e baseada na biblioteca `instagram-private-api`. Ela oferece uma interface poderosa e simples para interagir com o Instagram de forma automatizada por meio de endpoints HTTP.
 
