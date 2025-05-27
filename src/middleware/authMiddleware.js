@@ -1,3 +1,5 @@
+const env = require("../utils/env");
+
 require("dotenv").config();
 
 const adminAuthMiddleware = (req, res, next) => {
@@ -9,7 +11,7 @@ const adminAuthMiddleware = (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
-  if (token !== process.env.ADMIN_TOKEN) {
+  if (token !== env.ADMIN_TOKEN) {
     return res.status(403).json({ error: "Token inválido" });
   }
 

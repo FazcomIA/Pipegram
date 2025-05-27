@@ -9,6 +9,7 @@ const adminAuthMiddleware = require("./src/middleware/authMiddleware");
 const errorHandler = require("./src/utils/errorHandler");
 
 const path = require("path");
+const env = require("./src/utils/env");
 
 // Middleware para corpo da requisição
 app.use(express.json({ limit: "100mb" }));
@@ -34,5 +35,5 @@ app.get("/", (req, res) => {
 app.use(errorHandler);
 
 // Inicia o servidor
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT;
 app.listen(PORT, () => console.log(`✅ Servidor rodando na porta ${PORT}`));
