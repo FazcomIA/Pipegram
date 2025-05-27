@@ -1,13 +1,18 @@
 const axios = require("axios");
 const { getSessionClient } = require("../utils/sessionManager");
 const { getUserIdByUsername } = require("../utils/insta");
+const { z } = require("zod");
+const BadRequestError = require("../errors/badRequestError");
 
 const updateBio = async (req, res) => {
-  const { username, bio, base64, url } = req.body;
+  const schemaBody = z.object({
+    username: z.string({ required_error: "username é obrigatório" }),
+    bio: z.string().optional(),
+    url: z.string().url().optional(),
+    base64: z.string().base64().optional(),
+  });
 
-  if (!username) {
-    return res.status(400).json({ error: "username é obrigatório" });
-  }
+  const { username, bio, base64, url } = schemaBody.parse(req.body);
 
   try {
     const ig = await getSessionClient(username);
@@ -41,31 +46,33 @@ const updateBio = async (req, res) => {
       }
     }
 
-    res.json({ message: "Bio e/ou foto de perfil atualizadas com sucesso" });
+    return res.json({
+      message: "Bio e/ou foto de perfil atualizadas com sucesso",
+    });
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: `Erro ao atualizar bio/foto: ${err.message}` });
+    throw new BadRequestError(`Erro ao atualizar bio/foto: ${err.message}`);
   }
 };
 
 const getProfileByUsername = async (req, res) => {
-  const { username } = req.body; // da sessão
-  const { targetUsername } = req.params; // do perfil que queremos buscar
+  const schemaBody = z.object({
+    username: z.string(),
+  });
 
-  if (!username || !targetUsername) {
-    return res
-      .status(400)
-      .json({ error: "username e targetUsername são obrigatórios" });
-  }
+  const schemaParams = z.object({
+    targetUsername: z.string(),
+  });
+
+  const { username } = schemaBody.parse(req.body);
+  const { targetUsername } = schemaParams.parse(req.params);
 
   try {
     const ig = await getSessionClient(username);
     const id = await ig.user.getIdByUsername(targetUsername);
     const profile = await ig.user.info(id);
-    res.json(profile);
+    return res.json(profile);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw new BadRequestError(err.message);
   }
 };
 
