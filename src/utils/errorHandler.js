@@ -18,7 +18,7 @@ module.exports = (err, req, res, next) => {
   }
 
   if (err instanceof BadRequestError) {
-    return response.status(400).send({
+    return res.status(400).send({
       timestamp: new Date().getTime(),
       code: "BAD_REQUEST_ERROR",
       message: err.message,
@@ -26,7 +26,7 @@ module.exports = (err, req, res, next) => {
   }
 
   if (err instanceof ResourceNotFoundError) {
-    return response.status(404).send({
+    return res.status(404).send({
       timestamp: new Date().getTime(),
       code: "RESOURCE_NOT_FOUND",
       message: err.message,
@@ -34,7 +34,7 @@ module.exports = (err, req, res, next) => {
   }
 
   if (err instanceof UnauthorizedError) {
-    return response.status(401).send({
+    return res.status(401).send({
       timestamp: new Date().getTime(),
       code: "UNAUTHORIZED_ERROR",
       message: err.message,
@@ -42,7 +42,7 @@ module.exports = (err, req, res, next) => {
   }
 
   if (err instanceof ForbiddenError) {
-    return response.status(403).send({
+    return res.status(403).send({
       timestamp: new Date().getTime(),
       code: "FORBIDDEN_ERROR",
       message: err.message,
