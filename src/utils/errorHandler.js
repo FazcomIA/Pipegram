@@ -1,6 +1,8 @@
 const { ZodError } = require("zod");
-const { BadRequestError } = require("../errors/badRequestError");
+const BadRequestError = require("../errors/badRequestError");
 const ResourceNotFoundError = require("../errors/resourceNotFound");
+const UnauthorizedError = require("../errors/unauthorizedError");
+const ForbiddenError = require("../errors/forbiddenError");
 
 module.exports = (err, req, res, next) => {
   if (err instanceof ZodError) {
@@ -27,6 +29,22 @@ module.exports = (err, req, res, next) => {
     return response.status(404).send({
       timestamp: new Date().getTime(),
       code: "RESOURCE_NOT_FOUND",
+      message: err.message,
+    });
+  }
+
+  if (err instanceof UnauthorizedError) {
+    return response.status(401).send({
+      timestamp: new Date().getTime(),
+      code: "UNAUTHORIZED_ERROR",
+      message: err.message,
+    });
+  }
+
+  if (err instanceof ForbiddenError) {
+    return response.status(403).send({
+      timestamp: new Date().getTime(),
+      code: "FORBIDDEN_ERROR",
       message: err.message,
     });
   }
