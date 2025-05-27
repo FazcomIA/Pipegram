@@ -1,5 +1,8 @@
 const axios = require("axios");
 const { getSessionClient } = require("../utils/sessionManager");
+const BadRequestError = require("../errors/badRequestError");
+const ResourceNotFoundError = require("../errors/resourceNotFound");
+const { z } = require("zod");
 
 // Função para adicionar atraso
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -11,11 +14,11 @@ async function bufferFromSource({ base64, url }) {
       const base64Data = base64.split(",")[1] || base64; // Remover prefixo (ex.: "data:image/jpeg;base64,")
       const buffer = Buffer.from(base64Data, "base64");
       if (!buffer || !Buffer.isBuffer(buffer) || buffer.length === 0) {
-        throw new Error("Base64 inválido ou vazio.");
+        throw new BadRequestError("Base64 inválido ou vazio.");
       }
       return buffer;
     } catch (err) {
-      throw new Error("Erro ao decodificar base64: " + err.message);
+      throw new BadRequestError(`Erro ao decodificar base64: ${err.message}`);
     }
   }
 
@@ -32,7 +35,7 @@ async function bufferFromSource({ base64, url }) {
         });
         const buffer = Buffer.from(response.data);
         if (!buffer || buffer.length === 0) {
-          throw new Error("URL retornou conteúdo vazio.");
+          throw new BadRequestError("URL retornou conteúdo vazio.");
         }
         return buffer;
       } catch (err) {
@@ -41,35 +44,64 @@ async function bufferFromSource({ base64, url }) {
           await delay(1000 * (4 - retries)); // Atraso de 1s, 2s, 3s
           continue;
         }
-        throw new Error("Erro ao baixar mídia da URL: " + err.message);
+        throw new BadRequestError(
+          `Erro ao baixar mídia da URL: ${err.message}`
+        );
       }
     }
   }
 
-  throw new Error("Nem base64 nem url fornecidos.");
+  throw new ResourceNotFoundError("Nem base64 nem url fornecidos.");
 }
 
 async function postPhotoFeed(req, res) {
-  const { username, caption, base64, url } = req.body;
+  const schemaBody = z
+    .object({
+      username: z.string({ required_error: "username é obrigatório" }),
+      caption: z.string({ required_error: "caption é obrigatório" }),
+      url: z.string().url().optional(),
+      base64: z.string().base64().optional(),
+    })
+    .refine((data) => data.base64 !== undefined || data.url !== undefined, {
+      message: "Você deve informar ao menos base64 ou url",
+      path: ["url", "base64"],
+    });
+
+  const { username, caption, base64, url } = schemaBody.parse(req.body);
   try {
     const ig = await getSessionClient(username);
     const buffer = await bufferFromSource({ base64, url });
     const publishResult = await ig.publish.photo({ file: buffer, caption });
-    res.json({ message: "Foto publicada no Feed", media: publishResult });
+    return res.json({
+      message: "Foto publicada no Feed",
+      media: publishResult,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw new BadRequestError(err.message);
   }
 }
 
 async function postPhotoStory(req, res) {
-  const { username, base64, url } = req.body;
+  const schemaBody = z
+    .object({
+      username: z.string({ required_error: "username é obrigatório" }),
+      url: z.string().url().optional(),
+      base64: z.string().base64().optional(),
+    })
+    .refine((data) => data.base64 !== undefined || data.url !== undefined, {
+      message: "Você deve informar ao menos base64 ou url",
+      path: ["url", "base64"],
+    });
+
+  const { username, base64, url } = schemaBody.parse(req.body);
   try {
     const ig = await getSessionClient(username);
     const buffer = await bufferFromSource({ base64, url });
     const result = await ig.publish.story({ file: buffer });
-    res.json({ message: "Story publicado", media: result });
+
+    return res.json({ message: "Story publicado", media: result });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw new BadRequestError(err.message);
   }
 }
 
