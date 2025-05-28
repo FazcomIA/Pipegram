@@ -6,61 +6,76 @@ const sessionManager = require("../utils/sessionManager");
 const fs = require("fs");
 const path = require("path");
 const { getSessionClient, saveSession } = require("../utils/sessionManager");
+const { z } = require("zod");
+const BadRequestError = require("../errors/badRequestError");
+const ResourceNotFoundError = require("../errors/resourceNotFound");
 
 const login = async (req, res) => {
-  const { username, password, proxy } = req.body;
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ error: "Username e password são obrigatórios." });
-  }
+  const schemaBody = z.object({
+    username: z.string({ required_error: "Username é obrigatório." }),
+    password: z.string({ required_error: "Password é obrigatório." }),
+    proxy: z.string().url().nullable(),
+  });
+
+  const { username, password, proxy } = schemaBody.parse(req.body);
 
   try {
     const { session } = await loginWithPassword(username, password, proxy);
-    res.status(200).json({ message: "Login realizado com sucesso", session });
+    return res
+      .status(200)
+      .json({ message: "Login realizado com sucesso", session });
   } catch (error) {
     console.error("Erro no login:", error.message);
-    res.status(500).json({ error: "Falha ao autenticar com o Instagram" });
+    throw new BadRequestError("Falha ao autenticar com o Instagram");
   }
 };
 
 const resume = async (req, res) => {
-  const { username } = req.body;
+  const schemaBody = z.object({
+    username: z.string(),
+  });
+
+  const { username } = schemaBody.parse(req.body);
   try {
     const ig = await resumeSession(username);
-    res.status(200).json({ message: "Sessão retomada com sucesso" });
+    return res.status(200).json({ message: "Sessão retomada com sucesso" });
   } catch (error) {
-    res.status(404).json({ error: "Sessão não encontrada ou inválida" });
+    throw new ResourceNotFoundError("Sessão não encontrada ou inválida");
   }
 };
 
 const status = async (req, res) => {
-  const { username } = req.body;
+  const schemaBody = z.object({
+    username: z.string(),
+  });
+
+  const { username } = schemaBody.parse(req.body);
   const exists = sessionManager.sessionExists(username);
-  res.json({ username, status: exists ? "ativa" : "inexistente" });
+  return res.json({ username, status: exists ? "ativa" : "inexistente" });
 };
 
 const logout = (req, res) => {
-  const { username } = req.body;
-  if (!username)
-    return res.status(400).json({ error: "Username é obrigatório" });
+  const schemaBody = z.object({
+    username: z.string({ required_error: "Username é obrigatório" }),
+  });
+
+  const { username } = schemaBody.parse(req.body);
 
   const success = sessionManager.deleteSession(username);
   if (success) {
     res.json({ message: "Sessão removida com sucesso" });
   } else {
-    res.status(404).json({ error: "Sessão não encontrada" });
+    throw new ResourceNotFoundError("Sessão não encontrada");
   }
 };
 
 const importSession = async (req, res) => {
-  const { username, session } = req.body;
+  const schemaBody = z.object({
+    username: z.string({ required_error: "Username é obrigatório" }),
+    session: z.any(),
+  });
 
-  if (!username || !session) {
-    return res
-      .status(400)
-      .json({ error: "username e session (JSON) são obrigatórios." });
-  }
+  const { username, session } = schemaBody.parse(req.body);
 
   try {
     // Salva o arquivo na pasta sessions
@@ -70,7 +85,7 @@ const importSession = async (req, res) => {
     const ig = await getSessionClient(username);
     const user = await ig.account.currentUser();
 
-    res.json({
+    return res.json({
       message: "Sessão importada com sucesso.",
       logged_in_user: {
         username: user.username,
@@ -79,7 +94,7 @@ const importSession = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: "Erro ao importar sessão: " + err.message });
+    throw new BadRequestError(`Erro ao importar sessão: ${err.message}`);
   }
 };
 

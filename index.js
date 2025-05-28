@@ -6,7 +6,10 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./src/docs/swagger.json");
 const adminAuthMiddleware = require("./src/middleware/authMiddleware");
 
+const errorHandler = require("./src/utils/errorHandler");
+
 const path = require("path");
+const env = require("./src/utils/env");
 
 // Middleware para corpo da requisição
 app.use(express.json({ limit: "100mb" }));
@@ -28,6 +31,9 @@ app.get("/", (req, res) => {
   res.send("🚀 API do Instagram não oficial (multi sessões) está rodando!");
 });
 
+// Error Handler
+app.use(errorHandler);
+
 // Inicia o servidor
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT;
 app.listen(PORT, () => console.log(`✅ Servidor rodando na porta ${PORT}`));

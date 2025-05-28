@@ -1,13 +1,16 @@
 const { getSessionClient } = require("../utils/sessionManager");
+const { z } = require("zod");
+const BadRequestError = require("../errors/badRequestError");
 
 async function getUserStories(req, res) {
-  const { username, targetUsername } = req.body;
+  const schemaBody = z.object({
+    username: z.string({ required_error: "username é obrigatório" }),
+    targetUsername: z.string({
+      required_error: "targetUsername é obrigatório",
+    }),
+  });
 
-  if (!username || !targetUsername) {
-    return res
-      .status(400)
-      .json({ error: "username e targetUsername são obrigatórios." });
-  }
+  const { username, targetUsername } = schemaBody.parse(req.body);
 
   try {
     const ig = await getSessionClient(username);
@@ -34,9 +37,9 @@ async function getUserStories(req, res) {
       };
     });
 
-    res.json(stories);
+    return res.json(stories);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw new BadRequestError(err.message);
   }
 }
 
